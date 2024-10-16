@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     stages {
+        
         stage('Build') {
             agent {
                 docker {
@@ -9,6 +10,8 @@ pipeline {
                     reuseNode true
                 }
             }
+        stage('Test')
+            sh echo('test stage')
             steps {
                 echo 'Hello World'
                 sh '''
