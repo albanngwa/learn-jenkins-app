@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     stages {
-        
         stage('Build') {
             agent {
                 docker {
@@ -10,8 +9,6 @@ pipeline {
                     reuseNode true
                 }
             }
-        stage('Test')
-            sh echo('test stage')
             steps {
                 echo 'Hello World'
                 sh '''
@@ -21,6 +18,16 @@ pipeline {
                     npm ci
                     npm run build
                     ls -la
+                '''
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Test stage'
+                sh '''
+                    ls -la
+                    echo "Running tests..."
                 '''
             }
         }
