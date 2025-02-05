@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     stages {
+        // Uncomment the Build stage if needed
         /*
         stage('Build') {
             agent {
@@ -22,9 +23,10 @@ pipeline {
             }
         }
         */
-        stage('Tests') {
+
+        stage('Run Tests') {
             parallel {
-                Unit_Test {
+                stage('Test') {
                     agent {
                         docker {
                             image 'node:18-alpine'
@@ -38,14 +40,9 @@ pipeline {
                             npm test
                         '''
                     }
-                    post {
-                        always {
-                            junit 'jest-results/junit.xml'
-                        }
-                    }
                 }
 
-                E2E {
+                stage('E2E') {
                     agent {
                         docker {
                             image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -61,24 +58,24 @@ pipeline {
                             npx playwright test --reporter=html
                         '''
                     }
-                    post {
-                        always {
-                            publishHTML([
-                                allowMissing: false,
-                                alwaysLinkToLastBuild: false,
-                                keepAll: false,
-                                reportDir: 'playwright-report',
-                                reportFiles: 'index.html',
-                                reportName: 'playwright HTML Report',
-                                reportTitles: '',
-                                useWrapperFileDirectly: true
-                            ])
-                        }
-                    }
                 }
             }
         }
     }
-}
 
-// added 
+    post {
+        always {
+            junit 'jest-results/junit.xml'
+            publishHTML([
+                allowMissing: false, 
+                alwaysLinkToLastBuild: false, 
+                keepAll: false, 
+                reportDir: 'playwright-report', 
+                reportFiles: 'index.html', 
+                reportName: 'playwright HTML Report', 
+                reportTitles: '', 
+                useWrapperFileDirectly: true
+            ])
+        }
+    }
+}
