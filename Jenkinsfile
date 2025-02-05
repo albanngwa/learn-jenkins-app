@@ -11,20 +11,19 @@ pipeline {
                     reuseNode true
                 }
             }
-            steps{
-                sh'''
+            steps {
+                sh """
                     ls -la
                     node --version
                     npm --version
                     npm ci
                     npm run build
-                    ls  -la
-                '''
+                    ls -la
+                """
             }
         }
         */
 
-    stages {
         stage('Test') {
             agent {
                 docker {
@@ -41,6 +40,7 @@ pipeline {
                 """
             }
         }
+
         stage('E2E') {
             agent {
                 docker {
@@ -60,6 +60,7 @@ pipeline {
             }
         }
     }
+
     post {
         always {
             sh 'mkdir -p test-results'
@@ -67,3 +68,4 @@ pipeline {
             junit 'test-results/junit.xml'
         }
     }
+}
