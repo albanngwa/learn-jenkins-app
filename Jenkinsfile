@@ -11,15 +11,15 @@ pipeline {
                     reuseNode true
                 }
             }
-            steps {
-                sh """
+            steps{
+                sh'''
                     ls -la
                     node --version
                     npm --version
                     npm ci
                     npm run build
-                    ls -la
-                """
+                    ls  -la
+                '''
             }
         }
         */
@@ -28,43 +28,36 @@ pipeline {
             agent {
                 docker {
                     image 'node:18-alpine'
+                    args '--user root'
                     reuseNode true
                 }
             }
             steps {
-                sh """
-                    node --version
-                    npm --version
-                    npm ci
+                sh'''
+                    #test -f 'build/index.html'
                     npm test
-                """
+                '''
             }
         }
-
         stage('E2E') {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.50.1-noble'
+                    args '--user root'
                     reuseNode true
                 }
             }
             steps {
-                sh """
-                    node --version
-                    npm --version
+                sh'''
                     npm install -g serve
-                    serve -s build &
-                    sleep 5  # Give server time to start
+                    serve -s build
                     npx playwright test
-                """
+                '''
             }
         }
     }
-
     post {
         always {
-            sh 'mkdir -p test-results'
-            sh 'touch test-results/junit.xml'
             junit 'test-results/junit.xml'
         }
     }
