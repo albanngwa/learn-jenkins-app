@@ -25,8 +25,6 @@ pipeline {
             agent {
                 docker {
                     image 'node:18-alpine'
-                    /* groovylint-disable-next-line DuplicateStringLiteral */
-                    args '--user root'
                     reuseNode true
                 }
             }
