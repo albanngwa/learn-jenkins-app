@@ -24,8 +24,6 @@ pipeline {
         }
         */
 
-pipeline {
-    agent any
     stages {
         stage('Test') {
             agent {
@@ -69,4 +67,3 @@ pipeline {
             junit 'test-results/junit.xml'
         }
     }
-}
