@@ -24,6 +24,9 @@ pipeline {
         }
         */
 
+pipeline {
+    agent any
+    stages {
         stage('Test') {
             agent {
                 docker {
@@ -32,10 +35,12 @@ pipeline {
                 }
             }
             steps {
-                sh'''
-                    #test -f 'build/index.html'
+                sh """
+                    node --version
+                    npm --version
+                    npm ci
                     npm test
-                '''
+                """
             }
         }
         stage('E2E') {
@@ -46,16 +51,21 @@ pipeline {
                 }
             }
             steps {
-                sh'''
+                sh """
+                    node --version
+                    npm --version
                     npm install -g serve
-                    serve -s build
+                    serve -s build &
+                    sleep 5  # Give server time to start
                     npx playwright test
-                '''
+                """
             }
         }
     }
     post {
         always {
+            sh 'mkdir -p test-results'
+            sh 'touch test-results/junit.xml'
             junit 'test-results/junit.xml'
         }
     }
