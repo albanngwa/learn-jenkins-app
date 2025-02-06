@@ -4,6 +4,7 @@ pipeline {
     environment {
         NETLIFY_SITE_ID = '4c2a28cc-7eb9-4657-bfd4-828251cbfab8'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+        CI_ENVIRONMENT_URL = 'https://67a3a52ac85bb108e666765b--dainty-llama-3e7693.netlify.app'
     }
 
     stages {
@@ -75,7 +76,7 @@ pipeline {
                                 keepAll: false, 
                                 reportDir: 'playwright-report', 
                                 reportFiles: 'index.html', 
-                                reportName: 'playwright HTML Report', 
+                                reportName: 'playwright Local Report', 
                                 reportTitles: '', 
                                 useWrapperFileDirectly: true
                             ])
@@ -102,5 +103,36 @@ pipeline {
                 '''
             }
         }
+                stage('Prod E2E') {
+                    agent {
+                        docker {
+                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            args '--user root'
+                            reuseNode true
+                        }
+                    }
+                    environment {
+                        CI_ENVIRONMENT_URL = 'https://67a3a52ac85bb108e666765b--dainty-llama-3e7693.netlify.app'
+                    }
+                    steps {
+                        sh '''
+                            npx playwright test --reporter=html
+                        '''
+                    }
+                    post {
+                        always {
+                            publishHTML([
+                                allowMissing: false, 
+                                alwaysLinkToLastBuild: false, 
+                                keepAll: false, 
+                                reportDir: 'playwright-report', 
+                                reportFiles: 'index.html', 
+                                reportName: 'playwright E2E Report', 
+                                reportTitles: '', 
+                                useWrapperFileDirectly: true
+                            ])
+                        }
+                    }
+                }
     }
 }
