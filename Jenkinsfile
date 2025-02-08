@@ -18,6 +18,7 @@ pipeline {
             }
             steps {
                 sh '''
+                    echo 'why is this not running'
                     echo 'small change'
                     ls -la
                     node --version
