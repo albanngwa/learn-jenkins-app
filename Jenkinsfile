@@ -41,8 +41,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm config set cache ~/.npm --global
-                    npm ci --unsafe-perm
+                    npm ci 
                     npm run build
                 '''
             }
