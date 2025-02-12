@@ -41,7 +41,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm install 
+                    npm ci --unsafe-perm
                     npm run build
                 '''
             }
